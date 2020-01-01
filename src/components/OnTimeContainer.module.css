@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css?family=EB+Garamond:400,400i,500&display=swap');
+
+.container {
+  background-color: #5b5b5b;
+  opacity: 0.9;
+  padding:10px;
+  color:white;
+  display: inline-block;
+  position: absolute;
+  bottom: 15px;
+  left:15px;
+  border-radius: 15px;
+  width: 450px;
+}
+
+.title{
+  font-size:40px;
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  margin-bottom: 5px;
+  line-height: 45px;
+  letter-spacing: -1px;
+}
+
+
+.subtitle{
+  font-size:18px;
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  font-style: italic;
+  margin-bottom: 10px;
+}
