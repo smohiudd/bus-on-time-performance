@@ -41,14 +41,14 @@ class TransitData extends Component {
       container: this.before,
       style: 'mapbox://styles/saadiqm/cjfnjiowo0zj62rpj0y1qpib0',
       center: [-114.0708, 51.0486],
-      zoom:12
+      zoom:11
     });
 
     this.map2 = new mapboxgl.Map({
       container: this.after,
       style: 'mapbox://styles/saadiqm/cjfnjiowo0zj62rpj0y1qpib0',
       center: [-114.0708, 51.0486],
-      zoom:12
+      zoom:11
     });
 
     syncmaps(this.map1, this.map2);
@@ -61,9 +61,10 @@ class TransitData extends Component {
         headsigns = headsigns.filter(onlyUnique)
 
         this.setState({data:data,isLoaded:true,direction:headsigns[0]})
-        let bounds= bbox(data); //find bounding box using Turf
-        this.map1.fitBounds(bounds);
-        this.map2.fitBounds(bounds);
+        let bounds= bbox(data);
+        let padding = {padding: {top: 40, bottom:40, left: 40, right: 40}} //find bounding box using Turf
+        this.map1.fitBounds(bounds,padding);
+        this.map2.fitBounds(bounds,padding);
       });
 
     this.map1.on('load', () => {
@@ -126,7 +127,7 @@ class TransitData extends Component {
             'circle-radius':[
               'interpolate', ["exponential", 2], ['zoom'],
               6,10,
-              10,['/',['get', 'diff'],20],
+              10,['/',['get', 'diff'],10],
               15,10
             ],
             'circle-color': [
@@ -138,7 +139,7 @@ class TransitData extends Component {
               '#2b5cff',
               /* other */ '#ccc'
             ],
-            'circle-opacity': 0.6,
+            'circle-opacity': 0.35,
           },
           filter:['all',['==', 'booking', "CT6"],['==', 'headsign', this.state.direction]]
       });
@@ -151,7 +152,7 @@ class TransitData extends Component {
             'circle-radius':[
               'interpolate', ["exponential", 2], ['zoom'],
               6,10,
-              10,['/',['get', 'diff'],20],
+              10,['/',['get', 'diff'],10],
               15,10
             ],
             'circle-color': [
@@ -163,7 +164,7 @@ class TransitData extends Component {
               '#2b5cff',
               /* other */ '#ccc'
             ],
-            'circle-opacity': 0.6,
+            'circle-opacity': 0.35,
           },
           filter:['all',['==', 'booking', "CT19"],['==', 'headsign', this.state.direction]]
       });
@@ -191,16 +192,22 @@ class TransitData extends Component {
   popUpEnter1(e){
     this.map1.getCanvas().style.cursor = 'pointer';
     var coordinates = e.features[0].geometry.coordinates.slice();
-    var diff = String(Math.round(e.features[0].properties.diff));
+    var diff = Math.round(e.features[0].properties.diff/60);
     var sign = String(e.features[0].properties.sign);
 
     sign = (sign > 0) ? "late" : "early";
 
+    let text = null;
 
-    let text = <div className="prose">
-    <p className="txt-h5 txt-bold">{diff} seconds {sign}</p>
-
-    </div>
+    if(diff < 1){
+      text = <div className="prose">
+      <p className="txt-h5 txt-bold">On time</p>
+      </div>
+    }else{
+      text = <div className="prose">
+      <p className="txt-h5 txt-bold">{diff} minutes {sign}</p>
+      </div>
+    }
 
     const placeholder = document.createElement('div');
     ReactDOM.render(text, placeholder);
@@ -217,16 +224,23 @@ class TransitData extends Component {
   popUpEnter2(e){
     this.map2.getCanvas().style.cursor = 'pointer';
     var coordinates = e.features[0].geometry.coordinates.slice();
-    var diff = String(Math.round(e.features[0].properties.diff));
+    var diff = Math.round(e.features[0].properties.diff/60);
     var sign = String(e.features[0].properties.sign);
 
     sign = (sign > 0) ? "late" : "early";
 
+    let text = null;
 
-    let text = <div className="prose">
-    <p className="txt-h5 txt-bold">{diff} seconds {sign}</p>
+    if(diff < 1){
+      text = <div className="prose">
+      <p className="txt-h5 txt-bold">On time</p>
+      </div>
+    }else{
+      text = <div className="prose">
+      <p className="txt-h5 txt-bold">{diff} minutes {sign}</p>
+      </div>
+    }
 
-    </div>
 
     const placeholder = document.createElement('div');
     ReactDOM.render(text, placeholder);
@@ -305,8 +319,11 @@ class TransitData extends Component {
             this.map2.setFilter("OnTimeData_2019",['all',['==', 'booking', "CT19"],['==', 'headsign', this.state.direction]])
 
             let bounds= bbox(data);
-            this.map1.fitBounds(bounds);
-            this.map2.fitBounds(bounds);
+
+            let padding = {padding: {top: 40, bottom:40, left: 40, right: 40}}
+
+            this.map1.fitBounds(bounds,padding);
+            this.map2.fitBounds(bounds,padding);
 
 
           })
